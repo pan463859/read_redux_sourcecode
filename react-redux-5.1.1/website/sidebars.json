@@ -1,0 +1,10 @@
+{
+  "docs": {
+    "Introduction": ["introduction/quick-start", "introduction/basic-tutorial"],
+    "Using React-Redux": [
+      "using-react-redux/connect-extracting-data-with-mapStateToProps"
+    ],
+    "API Reference": ["api", "api/provider"],
+    "Guides": ["troubleshooting"]
+  }
+}
