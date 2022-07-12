@@ -29,45 +29,54 @@ export const ActionTypes = {
  * 
  * @param {Function} reducer A function that returns the next state tree, given
  * the current state tree and the action to handle.
+ * 传入当前的 state 和 action 返回新的 state
  *
  * @param {any} [preloadedState] The initial state. You may optionally specify it
  * to hydrate the state from the server in universal apps, or to restore a
  * previously serialized user session.
  * If you use `combineReducers` to produce the root reducer function, this must be
  * an object with the same shape as `combineReducers` keys.
+ * 初始化 state，可选。可以是从服务器中拿到的数据来初始化或者保存之前的用户 session。
+ * 如果你使用 combineReducers 来生成根reducer，初始化 state 的数据结构需要和 combineReducers 里面的 
+ * key 要保持一致。
  *
  * @param {Function} [enhancer] The store enhancer. You may optionally specify it
  * to enhance the store with third-party capabilities such as middleware,
  * time travel, persistence, etc. The only store enhancer that ships with Redux
  * is `applyMiddleware()`.
- *
+ * store 增强函数。你可能需要如 moddleware，time-travel，数据持久化等第三方插件，来增强你 store 的能力。Redux 本身
+ * 官方给的唯一的增强器就是 applyMiddleware()
+ * 
  * @returns {Store} A Redux store that lets you read the state, dispatch actions
  * and subscribe to changes.
+ *  
+ * redux store 让你读取 state， dispatch actions 并且监听变化。
  */
 export default function createStore(reducer, preloadedState, enhancer) {
+  // 如果没有传递 preloadedState的时候，同时也没有enhencer的情况
   if (typeof preloadedState === 'function' && typeof enhancer === 'undefined') {
     enhancer = preloadedState
     preloadedState = undefined
   }
-
+  //enhancer存在的情况
   if (typeof enhancer !== 'undefined') {
     if (typeof enhancer !== 'function') {
       throw new Error('Expected the enhancer to be a function.')
     }
-
+    //使用 调用 enhancer 传入 createStore 再调用 (reducer, preloadedState)
     return enhancer(createStore)(reducer, preloadedState)
   }
 
   if (typeof reducer !== 'function') {
     throw new Error('Expected the reducer to be a function.')
   }
-
+  // 初始化所有变量
   let currentReducer = reducer
   let currentState = preloadedState
   let currentListeners = []
   let nextListeners = currentListeners
   let isDispatching = false
-
+  //浅拷贝所有listener 房子更新过程中listener更新
   function ensureCanMutateNextListeners() {
     if (nextListeners === currentListeners) {
       nextListeners = currentListeners.slice()
@@ -78,6 +87,7 @@ export default function createStore(reducer, preloadedState, enhancer) {
    * Reads the state tree managed by the store.
    *
    * @returns {any} The current state tree of your application.
+   * 返回当前 store 的 state，房子外界直接读取并修改，使用方法返回
    */
   function getState() {
     return currentState
