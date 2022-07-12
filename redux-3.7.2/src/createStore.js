@@ -7,6 +7,8 @@ import $$observable from 'symbol-observable'
  * If the current state is undefined, you must return the initial state.
  * Do not reference these action types directly in your code.
  */
+// 一些redux的保留action，同时给出提醒：对于任何未知的actiion，都需要有一个返回当前state作为保底。
+// 如果当前的state是undefined，则必须返回初始化的state
 export const ActionTypes = {
   INIT: '@@redux/INIT'
 }
@@ -14,11 +16,17 @@ export const ActionTypes = {
 /**
  * Creates a Redux store that holds the state tree.
  * The only way to change the data in the store is to call `dispatch()` on it.
- *
+ * 
+ * 创建一个 store 去保存 state 状态树，改变 store 中 state 的唯一方法就是调用 store 中的 dispatch()
+ * 
  * There should only be a single store in your app. To specify how different
  * parts of the state tree respond to actions, you may combine several reducers
  * into a single reducer function by using `combineReducers`.
  *
+ * 一个app中应该只有一个store，为了区分不同模块的状态如何对acitons的响应，你可能需要使用 combineReducers 来
+ * 合并不同的 reducers
+ * 到一个reducer方法中。
+ * 
  * @param {Function} reducer A function that returns the next state tree, given
  * the current state tree and the action to handle.
  *
