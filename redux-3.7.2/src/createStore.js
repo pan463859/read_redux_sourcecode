@@ -23,7 +23,7 @@ export const ActionTypes = {
  * parts of the state tree respond to actions, you may combine several reducers
  * into a single reducer function by using `combineReducers`.
  *
- * 一个app中应该只有一个store，为了区分不同模块的状态如何对acitons的响应，你可能需要使用 combineReducers 来
+ * 一个 app 中应该只有一个 store，为了区分不同模块的状态如何对 acitons 的响应，你可能需要使用 combineReducers 来
  * 合并不同的 reducers
  * 到一个reducer方法中。
  * 
@@ -97,16 +97,29 @@ export default function createStore(reducer, preloadedState, enhancer) {
    * Adds a change listener. It will be called any time an action is dispatched,
    * and some part of the state tree may potentially have changed. You may then
    * call `getState()` to read the current state tree inside the callback.
-   *
+   * 
+   * 添加一个变化的listener，当 action 被 dispatched 的时候 listener 会被调用。部分 state 可能会被改变。
+   * 你可以使用 getState() 方法在 listener 内部获取到 state。
+   * 
+   * 
    * You may call `dispatch()` from a change listener, with the following
    * caveats:
-   *
+   * 
+   * 你可能在 listener 变化的时候调用 dispatch,有以下两点需要注意：
+   * 
    * 1. The subscriptions are snapshotted just before every `dispatch()` call.
    * If you subscribe or unsubscribe while the listeners are being invoked, this
    * will not have any effect on the `dispatch()` that is currently in progress.
    * However, the next `dispatch()` call, whether nested or not, will use a more
    * recent snapshot of the subscription list.
-   *
+   * 
+   * 1.dispatch 调用之前，所有的订阅，也就是 listenerlist 会被拷贝一份。当你在 listeners 在遍历执行过程中加入listener 或取消 listener 
+   * 都不会影响正在执行的 dipatch，当时你下一个diapatch，无论封装与否，都会拿最新的 listeners 去执行。
+   * 
+   * 2.listener 别指望知道所有的 state 变化，毕竟在一个封装的 disapatch 中，在listener 调用之前， 
+   * state 可能会更新很多次。能保证的是。所有在 dispatch 调用之前注册的 listener 会在执行的时候拿到最新
+   * 的 state。
+   * 
    * 2. The listener should not expect to see all state changes, as the state
    * might have been updated multiple times during a nested `dispatch()` before
    * the listener is called. It is, however, guaranteed that all subscribers
@@ -124,7 +137,7 @@ export default function createStore(reducer, preloadedState, enhancer) {
     let isSubscribed = true
 
     ensureCanMutateNextListeners()
-    nextListeners.push(listener)
+    .push(listener)
 
     return function unsubscribe() {
       if (!isSubscribed) {
