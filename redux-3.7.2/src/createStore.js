@@ -137,7 +137,7 @@ export default function createStore(reducer, preloadedState, enhancer) {
     let isSubscribed = true
 
     ensureCanMutateNextListeners()
-    .push(listener)
+    nextListeners.push(listener)
 
     return function unsubscribe() {
       if (!isSubscribed) {
@@ -204,7 +204,7 @@ export default function createStore(reducer, preloadedState, enhancer) {
     if (isDispatching) {
       throw new Error('Reducers may not dispatch actions.')
     }
-    //执行 reducer 得到最新的 state
+    //执行 reducer 得到最新的 state  
     try {
       isDispatching = true
       currentState = currentReducer(currentState, action)
@@ -215,7 +215,7 @@ export default function createStore(reducer, preloadedState, enhancer) {
     const listeners = currentListeners = nextListeners
     for (let i = 0; i < listeners.length; i++) {
       const listener = listeners[i]
-      listener()
+      listener() 
     }
     //返回 action
     return action
@@ -246,6 +246,7 @@ export default function createStore(reducer, preloadedState, enhancer) {
    * For more information, see the observable proposal:
    * https://github.com/tc39/proposal-observable
    */
+  // 貌似是暴露出去用来接入外部观察者的方法，后续理解清楚再来看看 :todo
   function observable() {
     const outerSubscribe = subscribe
     return {
@@ -253,9 +254,11 @@ export default function createStore(reducer, preloadedState, enhancer) {
        * The minimal observable subscription method.
        * @param {Object} observer Any object that can be used as an observer.
        * The observer object should have a `next` method.
+       * 任何一个可以用作观察者的对象，观察者对象应该有一个 next 的方法。
        * @returns {subscription} An object with an `unsubscribe` method that can
        * be used to unsubscribe the observable from the store, and prevent further
        * emission of values from the observable.
+       * 具有 `unsubscribe` 方法的对象，可用于从存储中取消订阅 observable，并防止从 observable 进一步触发值。
        */
       subscribe(observer) {
         if (typeof observer !== 'object') {
