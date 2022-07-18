@@ -88,18 +88,24 @@ function assertReducerShape(reducers) {
  * reducer function. It will call every child reducer, and gather their results
  * into a single state object, whose keys correspond to the keys of the passed
  * reducer functions.
- *
+ * 把一个值为不同的 reuducer 方法的对象变成一个单独的 reduncer 方法。它会调用每个子reduce，然后把所有的结果合并到一个单独的 state 对象，key 值和传入的 reducer
+ * 键值对一一对应。
+ * 
  * @param {Object} reducers An object whose values correspond to different
  * reducer functions that need to be combined into one. One handy way to obtain
  * it is to use ES6 `import * as reducers` syntax. The reducers may never return
  * undefined for any action. Instead, they should return their initial state
  * if the state passed to them was undefined, and the current state for any
  * unrecognized action.
- *
+ * 一个对象，包含所有要合并的 reduce 函数。一个简单的方法收集这些函数就是使用 es6 的 `import * as reducers` 语法。
+ * reducers 对任何 action 都不会返回 undefined，如果传进来的 state 是 undefined，reducers 需要返回 init state，如果接收到无法
+ * 识别的 action,则返回当前 state。
  * @returns {Function} A reducer function that invokes every reducer inside the
  * passed object, and builds a state object with the same shape.
+ * 返回一个函数，调用传入对象中的每一个子reducer，根据返回值创建一个有同 key 值的对象。
  */
 export default function combineReducers(reducers) {
+  //遍历拿到所有 key 一个 key 就是一个子 reduce 的名字。
   const reducerKeys = Object.keys(reducers)
   const finalReducers = {}
   for (let i = 0; i < reducerKeys.length; i++) {
@@ -115,6 +121,7 @@ export default function combineReducers(reducers) {
       finalReducers[key] = reducers[key]
     }
   }
+  //过滤拿到所有 value 是函数的 reducer。
   const finalReducerKeys = Object.keys(finalReducers)
 
   let unexpectedKeyCache
@@ -124,17 +131,20 @@ export default function combineReducers(reducers) {
 
   let shapeAssertionError
   try {
+    //规定两点：1、state 为 undefined type 为 ActionTypes.INIT 要传一个初始化的 state，不能返回 undefined。
+    //         2、state 为undefined type 为其他的时候，要返回当前的 state，不能返回 undefined。
     assertReducerShape(finalReducers)
   } catch (e) {
     shapeAssertionError = e
   }
-
+  //所有的可能错误处理结束，返回 combination 方法。
   return function combination(state = {}, action) {
     if (shapeAssertionError) {
       throw shapeAssertionError
     }
 
     if (process.env.NODE_ENV !== 'production') {
+      //排查有效 reducer 为空，初始 state 是否是 plainobject ，并打印错误参数。
       const warningMessage = getUnexpectedStateShapeWarningMessage(state, finalReducers, action, unexpectedKeyCache)
       if (warningMessage) {
         warning(warningMessage)
