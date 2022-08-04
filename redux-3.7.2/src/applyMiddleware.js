@@ -57,8 +57,8 @@ export default function applyMiddleware(...middlewares) {
 
 
 //redux-thunk
-var redux_thunk = function (_a) {
-  var dispatch = _a.dispatch, getState = _a.getState;
+var redux_thunk = function (store) {
+  var dispatch = store.dispatch, getState = store.getState;
   /*
     const middlewareAPI = {
       getState: store.getState,
